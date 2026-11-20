@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timetable del festival · 3 al 10 de diciembre</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#fbe9ee;--panel:#fffaf6;--ink:#3b2a33;--mute:#8a6d7b;--line:#f0cfda;--v0:#d8638a;--v1:#8f72b8;--v2:#dc8a4a;--ok:#1a7f45;--acc:#b83a68;--on:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#2a1c25;--panel:#38262f;--ink:#fbe9ee;--mute:#cba5b4;--line:#5a4150;--v0:#ff8fb1;--v1:#bfa4e6;--v2:#ffb778;--ok:#5fdc92;--acc:#ff8fb1;--on:#2a1c25}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#2a1c25;--panel:#38262f;--ink:#fbe9ee;--mute:#cba5b4;--line:#5a4150;--v0:#ff8fb1;--v1:#bfa4e6;--v2:#ffb778;--ok:#5fdc92;--acc:#ff8fb1;--on:#2a1c25}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Familjen Grotesk",system-ui,sans-serif;padding:16px 20px 32px}
+h1{font-size:clamp(22px,3vw,34px);margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0 0 14px;font-size:15px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--v1);outline-offset:2px}
+.tabs button[aria-selected="true"]{background:var(--acc);color:var(--on);border-color:var(--acc);font-weight:700}
+.tools{margin-left:auto;display:flex;gap:8px;align-items:center;color:var(--mute);font-size:14px}
+.tools button[aria-pressed="true"]{border-color:var(--ok);color:var(--ok);font-weight:700}
+.wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.grid{display:grid;grid-template-columns:64px repeat(3,minmax(230px,1fr));min-width:820px}
+.head{position:sticky;top:0;z-index:3;padding:12px 10px;font-weight:700;background:var(--panel);border-bottom:3px solid var(--c,var(--line))}
+.col{position:relative;border-left:1px solid var(--line)}
+.axis{position:relative}
+.hr{position:absolute;left:0;right:0;border-top:1px solid var(--line);font-size:13px;color:var(--mute);padding:2px 8px}
+.col .hr{padding:0}
+.ev{position:absolute;left:5px;right:5px;border-radius:7px;padding:6px 9px;overflow:hidden;text-align:left;
+background:color-mix(in srgb,var(--c) 16%,var(--panel));border:2px solid var(--c);line-height:1.2;font-size:15px}
+.ev b{display:block;font-size:16px;padding-right:46px}
+.bdg{position:absolute;top:6px;right:8px;font-size:12px;font-weight:700;color:var(--acc)}
+.ev small{color:var(--mute);font-size:13px}
+.ev[data-s="1"]{background:color-mix(in srgb,var(--ok) 28%,var(--panel));border-color:var(--ok)}
+.ev[data-s="2"]{border-style:dashed;background:color-mix(in srgb,#e8b400 22%,var(--panel))}
+.ev[data-s="3"]{opacity:.35}
+.ev[data-s="3"] b{text-decoration:line-through}
+.tag{float:right;font-weight:700;font-size:13px}
+.leg{color:var(--mute);font-size:14px;margin-top:12px}
+.inf{display:inline-block;margin-left:6px;padding:0 6px;border:1px solid var(--mute);border-radius:50%;cursor:pointer}
+.inf:focus-visible{outline:3px solid var(--v1)}
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;max-width:min(520px,92vw);padding:20px 22px}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.cats button[aria-pressed="true"]{background:var(--acc);color:var(--on);border-color:var(--acc);font-weight:700}
+dialog h2{margin:0 0 8px;font-size:22px}
+dialog p{margin:8px 0;line-height:1.45}
+dialog .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+dialog a{color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<h1>Cartelera del festival</h1>
+<p class="sub">3 al 10 de diciembre. Toca una función para ver su información.</p>
+<div class="bar">
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="tools"><button id="theme">Tema</button></div>
+</div>
+<div class="cats" id="cats" role="group" aria-label="Filtrar por categoría"></div>
+<div class="wrap"><div class="grid" id="grid"></div></div>
+<dialog id="dlg"></dialog>
+<p class="leg">Las funciones sin duración en la web se muestran de 60 minutos.</p>
+<script>
+var V=["Teatro NESCAFÉ de las Artes","Centro Arte Alameda · Sala CEINA","Cineteca Nacional"],T="T",C="C",N="N";
+var D=[
+[3,"18:00","Nova 78",0,78],[3,"20:30","Butthole Surfers: The Hole Truth and Nothing Butt",1,106],[3,"21:00","Panico (solo con invitación)",0,100],
+[4,"16:00","In-Edit Chile presenta: Francisca Valenzuela y Ruidosa, Mujeres que hacen ruido",0,60],[4,"18:30","Marianne Faithfull: Broken English",0,98],[4,"18:30","Once",1,86],[4,"19:00","El Tigre del Este",2,94],[4,"20:30","Sun Ra: Do the Impossible",1,84],[4,"21:00","Pulp: What Do You Do for an Encore?",0,90],
+[5,"12:00","Miss Jobson",0,80],[5,"16:00","La chica de Colonia",0,117],[5,"16:00","Sepultura en el Instituto Nacional: Labor Omnia Vincit",1,63],[5,"17:00","El sonido del matarife",2,51],[5,"18:00","Panico",1,100],[5,"19:00","Jack Johnson: Surfilmusic",0,75],[5,"20:00","Roberto Falabella: El peine de oro",2,77],[5,"21:00","Epic: Elvis Presley in Concert",0,96],[5,"21:00","Hex",1,92],
+[6,"12:00","Sun Ra: Do the Impossible",0,84],[6,"14:10","Butthole Surfers: The Hole Truth and Nothing Butt",0,106],[6,"16:00","Altas Mareas: El pacto de hielo negro",1,72],[6,"16:40","We Want the Funk!",0,80],[6,"18:40","Bowie: The Final Act",0,90],[6,"19:00","Nova 78",1,78],[6,"21:00","The Best Summer",0,90],[6,"21:00","Marianne Faithfull: Broken English",1,98],
+[7,"17:00","Miss Jobson",1,80],[7,"17:00","El canto de las manos",2,90],[7,"19:00","Fernanda Abreu: ‘Da Lata’ – 30 años",0,84],[7,"19:00","Full Dedication Alvaro",1,90],[7,"20:00","Altas Mareas: El pacto de hielo negro",2,72],[7,"21:00","We Want the Funk!",1,80],
+[8,"14:45","El Tigre del Este",1,94],[8,"16:45","La chica de Colonia",1,117],[8,"17:00","Mis videos favoritos: Chini.png",2,null],[8,"19:00","The Best Summer",1,90],[8,"19:00","Flores para Antonio",2,98],[8,"21:00","Bowie: The Final Act",1,90],
+[9,"16:00","Muestra de cortometrajes nacionales",2,null],[9,"17:30","Roberto Falabella: El peine de oro",2,77],[9,"18:30","Phil Lynott: Songs for While I’m Away",1,112],[9,"21:00","Fugs Film!",1,84],
+[10,"16:00","Fugs Film!",2,84],[10,"18:00","Álvaro: Inside Out",1,75],[10,"21:00","Hex",1,92]];
+var NM={3:"Jue",4:"Vie",5:"Sáb",6:"Dom",7:"Lun",8:"Mar",9:"Mié",10:"Jue"},PX=1.25,LS=["","Voy","Lo considero","No voy"];
+var st={},day=3,only=false,cat="";
+try{st=JSON.parse(localStorage.getItem("fest-st")||"{}")}catch(e){st={}}
+try{var th=localStorage.getItem("fest-th");if(th)document.documentElement.setAttribute("data-theme",th)}catch(e){}
+var INFO={
+"Nova 78":{s:"Documental armado con película de 16 mm restaurada de la Nova Convention de 1978 en Nueva York, donde coincidieron Burroughs, Patti Smith, Zappa y Ginsberg, entre otros."},
+"Once":{r:"97% (Tomatometer, unas 160 reseñas de críticos)",s:"Un músico callejero de Dublín y una inmigrante checa escriben canciones juntos durante una semana. Ganó el Oscar a mejor canción."}
+,
+"Bowie: The Final Act":{r:"70% (Tomatometer, 10 reseñas de críticos)",s:"Documental sobre la última etapa creativa de David Bowie, hasta Blackstar, el álbum que publicó dos días antes de morir. Dirigido por Jonathan Stiasny."},
+"Epic: Elvis Presley in Concert":{r:"97% (Tomatometer)",s:"Baz Luhrmann arma una película-concierto con metraje restaurado e inédito de las temporadas de Elvis en Las Vegas y de sus giras de los años 70, con la propia voz de Elvis como hilo narrativo."},
+"Pulp: What Do You Do for an Encore?":{s:"Película-concierto de Garth Jennings sobre Pulp, hecha con material de archivo y su show en vivo, con narración de Jarvis Cocker. De tono festivo."},
+"Butthole Surfers: The Hole Truth and Nothing Butt":{s:"Documental sobre la banda texana de art-punk fundada por Gibby Haynes y Paul Leary, con archivo, animación y reconstrucciones surrealistas. Dice de entrada que no será una hagiografía."}
+,
+"Phil Lynott: Songs for While I’m Away":{r:"100% (dato de Wikipedia de 2022; la página de RT no mostró el número actual)",s:"Documental de Emer Reynolds sobre Phil Lynott, el cantante de Thin Lizzy, desde su infancia en Dublín hasta convertirse en la gran estrella del rock irlandés. Se arma con archivo y entrevistas, sin narrador."},
+"Sun Ra: Do the Impossible":{s:"Retrato de Sun Ra, pionero del jazz cósmico y del afrofuturismo, armado con una gran masa de archivo: cartas, discos y metraje encontrado. Dirigido por Christine Turner."},
+"Marianne Faithfull: Broken English":{r:"entre 88% y 92% (25 a 26 reseñas, según la fecha de consulta)",s:"Retrato híbrido de Marianne Faithfull, filmado poco antes de su muerte: ella repasa su vida en un archivo ficticio, el Ministerio del No Olvidar, con Tilda Swinton. Dirigido por Iain Forsyth y Jane Pollard."},
+"Miss Jobson":{s:"Retrato de Diane Jobson, abogada y amiga de Bob Marley, a sus 80 años: sus clientes, la naturaleza de Jamaica y su mejor amiga. Dirigido por Amanda Sans Pantling."},
+"La chica de Colonia":{r:"cerca de 89% (38 reseñas en la consulta más reciente; otras fechas dieron 85% a 87%)",s:"Se titula Köln 75 en el original. Cuenta cómo la joven promotora Vera Brandes organizó en 1975 el concierto de Keith Jarrett que terminó siendo el disco de piano solo más vendido del jazz."}
+,
+"We Want the Funk!":{s:"Recorrido por la historia del funk, desde sus raíces africanas, gospel y jazz hasta James Brown, Parliament-Funkadelic y su huella en el hip hop. Dirigido por Stanley Nelson y Nicole London."},
+"The Best Summer":{s:"Tamra Davis rescata el metraje que grabó en 1995 durante la gira australiana Summersault, con Beastie Boys, Sonic Youth, Foo Fighters, Pavement y Bikini Kill, entre otros. Más álbum de recuerdos que documental clásico."},
+"Fugs Film!":{s:"Retrato de The Fugs, la banda de vanguardia neoyorquina de los años 60, con archivo y entrevistas a Ed Sanders, Lenny Kaye y R. Crumb, entre otros. Dirigido por Chuck Smith."},
+"Hex":{s:"Sigue a Witch Club Satan, banda feminista de black metal de Noruega formada por tres amigas, mezclando documental, ritual y performance. Es el primer largo de Maja Holand."},
+"Jack Johnson: Surfilmusic":{s:"Cuenta cómo Jack Johnson pasó de surfista a cineasta y a músico famoso, con archivo de las películas de surf que hizo con Chris y Emmett Malloy. Dirigido por Emmett Malloy."}
+,
+"Altas Mareas: El pacto de hielo negro":{s:"Documental sobre Hielo Negro, el trío de rock pesado de Punta Arenas que se define como ‘rock patagónico’, con tres décadas de recorrido. El festival lo anuncia como ‘Hielo Negro: Altas mareas’. Dirigido por Luis Renato Hermosilla."},
+"Panico":{s:"Cuenta la primera etapa de la banda chilena Panico. Dirigido por Jorge Catoni y Renata Valencia. Es la película de inauguración del festival."},
+"El Tigre del Este":{s:"La aventura entre Chile y México de un músico aficionado, admirador de Los Tigres del Norte. Dirigido por Jorge Acevedo Carrasco."},
+"Roberto Falabella: El peine de oro":{s:"Primera investigación biográfica sobre el compositor chileno Roberto Falabella. Dirigido por Rafael Boetsch Mira y Cristóbal Azócar Mira."},
+"Sepultura en el Instituto Nacional: Labor Omnia Vincit":{s:"Documental chileno sobre Sepultura en el Instituto Nacional, fuera de competencia. Dirigido por Álvaro Cariqueo Lavin. No encontré una sinopsis más detallada."},
+"El sonido del matarife":{s:"Largometraje nacional fuera de competencia, dirigido por Francisca Keller. No encontré una sinopsis."},
+"Fernanda Abreu: ‘Da Lata’ – 30 años":{s:"Documental de Paulo Severo sobre Da Lata, el disco de 1995 con que Fernanda Abreu fusionó samba y funk y marcó un punto de inflexión del pop brasileño. Ella asiste al estreno y da un concierto a las 21:00 el mismo lunes 7 en el Teatro NESCAFÉ."},
+"Full Dedication Alvaro":{s:"Documental de Hans Kotter, Jochen Hägle y Christian Zschammer sobre el músico Álvaro Peña. Ganó el premio Internacional del festival en 2009 y se reprograma como parte del homenaje."},
+"Álvaro: Inside Out":{s:"Filmado en los últimos meses de vida de Álvaro Peña, músico nacido en Valparaíso que murió en Konstanz en enero. Se estrena en la fecha en que habría cumplido 83 años. Dirigido por Christian Zschammer."},
+"Muestra de cortometrajes nacionales":{s:"Muestra de cortos nacionales. El festival anunció tres: Cabaret is not dead y Natales Metal Fest X (en competencia) y Hora punta (fuera de competencia). No confirmé que sean exactamente los de esta función."}
+,
+"El canto de las manos":{s:"Debut como directora de la actriz María Valverde. Sigue a tres músicos sordos de Venezuela, del Coro de Manos Blancas, que montan por primera vez en lengua de señas la ópera Fidelio de Beethoven junto a Gustavo Dudamel."},
+"Flores para Antonio":{s:"Alba Flores busca la verdad sobre su padre, el músico Antonio Flores, que murió cuando ella tenía 8 años. Dirigido por Elena Molina e Isaki Lacuesta. Ganó el Goya a mejor canción original y fue nominado a mejor documental."},
+"In-Edit Chile presenta: Francisca Valenzuela y Ruidosa, Mujeres que hacen ruido":{s:"Función con cine foro. Por el título, trata de Ruidosa, la plataforma y festival feminista que Francisca Valenzuela fundó en 2016 para visibilizar a mujeres y disidencias en la música. No encontré una sinopsis oficial. Dirigido por Javiera Tapia y Francisca Valenzuela."},
+"Mis videos favoritos: Chini.png":{s:"Cine foro con Chini.png, nombre artístico de María José Ayarza, cantante y artista visual chilena. Por el título, ella presenta sus videos favoritos, pero no encontré una descripción oficial de la función."}
+};
+function openInfo(e){var t=e[2].replace(" (solo con invitación)",""),q=encodeURIComponent(t),i=INFO[t],dl=document.getElementById("dlg");dl.innerHTML="";
+ var h=document.createElement("h2");h.textContent=t;dl.appendChild(h);var cp=document.createElement("p");cp.textContent="Categoría: "+catOf(t);dl.appendChild(cp);
+ var p=document.createElement("p");p.textContent=i?i.s:"Todavía no cargué la ficha de esta película. Usa los enlaces para verla.";dl.appendChild(p);
+ var lb=LBS[t],rt=i&&i.r,r=document.createElement("p");r.textContent=lb?"Letterboxd: "+lb+" / 5 (nota media)."+(rt?" Rotten Tomatoes: "+rt:""):(rt?"Rotten Tomatoes: "+rt:"Sin rating en Rotten Tomatoes ni Letterboxd por ahora.");dl.appendChild(r)
+ var row=document.createElement("div");row.className="row";
+ [["Letterboxd","https://letterboxd.com/search/"+q+"/"],["TMDB","https://www.themoviedb.org/search?query="+q]].forEach(function(l){var a=document.createElement("a");a.href=l[1];a.target="_blank";a.rel="noopener";a.textContent=l[0];row.appendChild(a)});
+ var c=document.createElement("button");c.textContent="Cerrar";c.onclick=function(){dl.close()};row.appendChild(c);dl.appendChild(row);dl.showModal()}
+var CATS=["Estrenos internacionales","Splendit","Panorama nacional: en competencia","Panorama nacional: fuera de competencia","Homenaje a Álvaro Peña","Sin categoría"];
+var CL=[["Bowie: The Final Act","Butthole Surfers: The Hole Truth and Nothing Butt","El canto de las manos","Fernanda Abreu: ‘Da Lata’ – 30 años","Flores para Antonio","Fugs Film!","Hex","Jack Johnson: Surfilmusic","La chica de Colonia","Marianne Faithfull: Broken English","Miss Jobson","Nova 78","Pulp: What Do You Do for an Encore?","Sun Ra: Do the Impossible","The Best Summer","We Want the Funk!"],["Once","Epic: Elvis Presley in Concert","Phil Lynott: Songs for While I’m Away"],["Roberto Falabella: El peine de oro","Altas Mareas: El pacto de hielo negro","El Tigre del Este","Panico"],["Sepultura en el Instituto Nacional: Labor Omnia Vincit","El sonido del matarife"],["Full Dedication Alvaro","Álvaro: Inside Out"]],CM={};
+CL.forEach(function(a,i){a.forEach(function(t){CM[t]=i})});
+function catOf(t){t=t.replace(" (solo con invitación)","");return CATS[CM[t]===undefined?5:CM[t]]}
+function cats(){var c=document.getElementById("cats");c.innerHTML="";["Todas"].concat(CATS).forEach(function(n,i){var b=document.createElement("button");b.textContent=n;var v=i?n:"";b.setAttribute("aria-pressed",cat==v);b.onclick=function(){cat=v;cats();draw()};c.appendChild(b)})}
+var LBS={};
+var RTS={"Once":"97%","Bowie: The Final Act":"70%","Epic: Elvis Presley in Concert":"97%","Phil Lynott: Songs for While I’m Away":"100%","Marianne Faithfull: Broken English":"88–92%","La chica de Colonia":"~89%"};
+function mins(h){var p=h.split(":");return p[0]*60+ +p[1]}
+function hm(m){m=Math.round(m);return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")}
+function key(i){return i}
+function save(){try{localStorage.setItem("fest-st",JSON.stringify(st))}catch(e){}}
+function tabs(){var t=document.getElementById("tabs");t.innerHTML="";
+ for(var d=3;d<=10;d++){(function(d){var b=document.createElement("button");b.textContent=NM[d]+" "+d;b.setAttribute("role","tab");b.setAttribute("aria-selected",d==day);
+ b.onclick=function(){day=d;location.hash="dia"+d;tabs();draw()};t.appendChild(b)})(d)}}
+function draw(){
+ var g=document.getElementById("grid");g.innerHTML="";
+ var ev=[];D.forEach(function(e,i){if(e[0]==day&&(!only||st[i]==1)&&(!cat||catOf(e[2])==cat))ev.push([i,e])});
+ var all=D.filter(function(e){return e[0]==day});
+ var lo=Math.floor(Math.min.apply(null,all.map(function(e){return mins(e[1])}))/60)*60;
+ var hi=Math.ceil(Math.max.apply(null,all.map(function(e){return mins(e[1])+(e[4]||60)}))/60)*60;
+ var h=(hi-lo)*PX+8;
+ var corner=document.createElement("div");corner.className="head";corner.textContent=NM[day]+" "+day;g.appendChild(corner);
+ V.forEach(function(v,k){var x=document.createElement("div");x.className="head";x.style.setProperty("--c","var(--v"+k+")");x.textContent=v;g.appendChild(x)});
+ var ax=document.createElement("div");ax.className="axis";ax.style.height=h+"px";
+ for(var m=lo;m<=hi;m+=60){var l=document.createElement("div");l.className="hr";l.style.top=(m-lo)*PX+"px";l.textContent=hm(m);ax.appendChild(l)}
+ g.appendChild(ax);
+ V.forEach(function(v,k){var c=document.createElement("div");c.className="col";c.style.height=h+"px";
+  for(var m=lo;m<=hi;m+=60){var l=document.createElement("div");l.className="hr";l.style.top=(m-lo)*PX+"px";c.appendChild(l)}
+  ev.filter(function(p){return p[1][3]==k}).forEach(function(p){
+   var i=p[0],e=p[1],s=mins(e[1]),d=e[4]||60,b=document.createElement("button");
+   b.className="ev";b.style.setProperty("--c","var(--v"+k+")");b.style.top=(s-lo)*PX+"px";b.style.height=d*PX-3+"px";
+   
+   b.innerHTML='<b></b><small>'+e[1]+" – "+hm(s+d)+(e[4]?"":" (duración sin dato)")+"</small>"+(d*PX>=100?'<small style="display:block">'+catOf(e[2])+"</small>":"");
+   b.querySelector("b").textContent=e[2];
+   var tt=e[2].replace(" (solo con invitación)",""),bv=LBS[tt]?"LB "+LBS[tt]:(RTS[tt]?"RT "+RTS[tt]:"");if(bv){var bd=document.createElement("span");bd.className="bdg";bd.textContent=bv;b.appendChild(bd)}
+   b.onclick=function(){openInfo(e)};
+   c.appendChild(b)});
+  g.appendChild(c)});
+ if(!ev.length){var n=document.createElement("div");n.style.cssText="grid-column:1/-1;padding:24px;color:var(--mute)";n.textContent="No hay funciones con este filtro en este día.";g.appendChild(n)}
+}
+
+document.getElementById("theme").onclick=function(){var r=document.documentElement,d=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),n=d=="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("fest-th",n)}catch(e){}};
+var hh=location.hash.match(/^#dia(\d+)$/);if(hh&&NM[hh[1]])day=+hh[1];
+cats();tabs();draw();
+</script>
+</body>
+</html>
